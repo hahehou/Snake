@@ -10,18 +10,18 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 public class SnakeGame{
-	private int TableW = 200;	//table width
-	private int TableH = 200;	//table height
-	private int UnitSize = 10;	//the size of snake-unit
+	private int TableW = 400;
+	private int TableH = 400;
+	private int UnitSize = 10;
 	
 	private JFrame f = new JFrame("Snake");
 	private MyCanvas TableArea = new MyCanvas();
 	
 	LinkedList<SnakeUnit> u = new LinkedList<SnakeUnit>();
+	Timer timer;
 
-	private int CurrentDrc = 0;		//up 1, right 2, down -1, left -2.
+	private int CurrentDrc = 0;		//up 0, right 0, down 2, left 3.
 	private int WantedDrc;
-	private int islose = 0;
 	
 	public void init() {
 		f.add(TableArea);
@@ -53,34 +53,29 @@ public class SnakeGame{
 
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				if(islose == 0) {	
-				//u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x(),u.getFirst().getSnakeUnit_y()));
-					if(Math.abs(CurrentDrc - WantedDrc)!=2)	
-						CurrentDrc = WantedDrc;
-						
-					if(CurrentDrc == 0)
-						u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x(),u.getFirst().getSnakeUnit_y()-1));
-					else if(CurrentDrc == 1)
-						u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x()+1,u.getFirst().getSnakeUnit_y()));
-					else if(CurrentDrc == 2)
-						u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x(),u.getFirst().getSnakeUnit_y()+1));
-					else if(CurrentDrc == 3)
-						u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x()-1,u.getFirst().getSnakeUnit_y()));
 					
-					if(u.getFirst().getSnakeUnit_x() < 0 || u.getFirst().getSnakeUnit_x() > TableW/UnitSize || u.getFirst().getSnakeUnit_y() < 0 || u.getFirst().getSnakeUnit_y() > TableH/UnitSize) 
-						islose = 1;
-					else
-						u.removeLast();
+				if(Math.abs(CurrentDrc - WantedDrc)!=2)	
+					CurrentDrc = WantedDrc;
 					
+				if(CurrentDrc == 0)
+					u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x(),u.getFirst().getSnakeUnit_y()-1));
+				else if(CurrentDrc == 1)
+					u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x()+1,u.getFirst().getSnakeUnit_y()));
+				else if(CurrentDrc == 2)
+					u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x(),u.getFirst().getSnakeUnit_y()+1));
+				else if(CurrentDrc == 3)
+					u.addFirst(new SnakeUnit(u.getFirst().getSnakeUnit_x()-1,u.getFirst().getSnakeUnit_y()));
+				
+				if(u.getFirst().getSnakeUnit_x() < 0 || u.getFirst().getSnakeUnit_x() >= TableW/UnitSize || u.getFirst().getSnakeUnit_y() < 0 || u.getFirst().getSnakeUnit_y() >= TableH/UnitSize) {
+					timer.stop();
+				}else {	
+					u.removeLast();
 					TableArea.repaint();
-				}else {
-				;
-				}
+				}			
 			}
-			
 		};
 		
-		Timer timer = new Timer(1000,TaskPerfommer);
+		timer = new Timer(400,TaskPerfommer);
 		timer.start();
 		f.pack();
 		f.setVisible(true);
@@ -111,20 +106,14 @@ public class SnakeGame{
 	}
 	
 	class MyCanvas extends Canvas{
-		/**
-		 * 
-		 */
+		
 		private static final long serialVersionUID = 1L;
 
 		public void paint(Graphics g) {
-			
-			if(islose == 0) {
-				for(int i = 0; i<u.size(); i++) {
-					g.fillRect(u.get(i).getSnakeUnit_x()*UnitSize, u.get(i).getSnakeUnit_y()*UnitSize, UnitSize, UnitSize);
-				}
-			}else {
-				g.drawString("GAME OVER", 80, 90);
-			}
+				
+			for(int i = 0; i<u.size(); i++) {
+				g.fillRect(u.get(i).getSnakeUnit_x()*UnitSize, u.get(i).getSnakeUnit_y()*UnitSize, UnitSize, UnitSize);
+			}	
 		}
 	}
 }
